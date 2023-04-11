@@ -17,7 +17,7 @@ const βc = 0.5 * log(√2 + 1)
     J = 1.0
     h = 0.0
 
-    nβ = 128
+    nβ = 2
     lsβ = range(.9*βc, βc, length=nβ)
     lsfe = zeros(nβ)
 
@@ -25,7 +25,8 @@ const βc = 0.5 * log(√2 + 1)
     βls_notconv = []
 
     for (idx, β) in enumerate(lsβ)
-        lsfe[idx], convergenceQ = mainTRG(β, J, h; nstep=20, maxdim=64, cutoff=1e-12, stop_ratio=1e-12)
+        feTRG, convergenceQ = mainTRG(β, J, h; nstep=42, maxdim=64, cutoff=1e-12, stop_ratio=1e-12)
+        lsfe[idx] = feTRG
         feExact = ising_free_energy(β, J)
         @show abs((feTRG-feExact)/feExact)
 
@@ -37,7 +38,7 @@ const βc = 0.5 * log(√2 + 1)
 
     file = matopen(timeStamp*".mat", "w")
     write(file, "lsfe", lsfe)
-    write(file, "lsb", lsβ)
+    write(file, "lsb", collect(lsβ))
     close(file)
 
     println("------------------------------")
@@ -45,3 +46,5 @@ const βc = 0.5 * log(√2 + 1)
     println("------------------------------")
     @pt βls_notconv
 end
+
+return nothing
